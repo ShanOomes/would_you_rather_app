@@ -39,6 +39,9 @@ def index():
 @app.route("/generate")
 def generate():
     lang = request.args.get("lang", "en")
+
+    print("API Key:", os.getenv("OPENROUTER_API_KEY"))
+
     try:
         question = generate_would_you_rather(lang)
         return jsonify({"question": question})
