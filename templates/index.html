@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Would You Rather?</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(to right, #a18cd1, #fbc2eb);
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            padding: 1rem;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        #question {
+            font-size: 1.5rem;
+            background: white;
+            padding: 1.5rem;
+            border-radius: 1rem;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            margin-bottom: 2rem;
+            text-align: center;
+            max-width: 600px;
+            min-height: 80px;
+        }
+
+        button {
+            font-size: 1.2rem;
+            padding: 0.75rem 2rem;
+            border: none;
+            border-radius: 999px;
+            background-color: #6a11cb;
+            background-image: linear-gradient(315deg, #6a11cb 0%, #2575fc 74%);
+            color: white;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
+        }
+
+        .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid #6a11cb;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+            display: none;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 2rem;
+            }
+
+            #question {
+                font-size: 1.2rem;
+                padding: 1rem;
+            }
+
+            button {
+                font-size: 1rem;
+                padding: 0.5rem 1.5rem;
+            }
+        }
+
+        #langBtn {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            font-size: 0.9rem;
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 999px;
+            background-color: rgba(255, 255, 255, 0.9);
+            color: #333;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            transition: background-color 0.3s ease;
+        }
+
+        #langBtn:hover {
+            background-color: #eee;
+        }
+    </style>
+</head>
+<body>
+    <button id="langBtn" onclick="switchLanguage()">🌐 Nederlands</button>
+    <h1>🤔 Would You Rather...</h1>
+    <div id="question">Click the button to generate a new question!</div>
+    <div class="spinner" id="loadingSpinner"></div>
+    <button id="generateBtn" onclick="generateQuestion()">Generate</button>
+
+    <script>
+        async function generateQuestion() {
+            const spinner = document.getElementById('loadingSpinner');
+            const questionDiv = document.getElementById('question');
+
+            spinner.style.display = 'block';
+            questionDiv.style.display = 'none'; // hide question during load
+            questionDiv.innerText = '';
+
+            try {
+                const response = await fetch(`/generate?lang=${currentLang}`);
+                const data = await response.json();
+
+                if (data.question) {
+                    questionDiv.innerText = data.question;
+                    questionDiv.style.display = 'block';
+                } else {
+                    questionDiv.innerText = "Oops! Something went wrong.";
+                    questionDiv.style.display = 'block';
+                }
+            } catch (e) {
+                questionDiv.innerText = "Error loading question. Please try again.";
+                questionDiv.style.display = 'block';
+            } finally {
+                spinner.style.display = 'none';
+            }
+        }
+
+
+        let currentLang = "en";
+
+        const translations = {
+            en: {
+                title: "🤔 Would You Rather...",
+                generate: "Generate",
+                loading: "Generating question...",
+                error: "Oops! Something went wrong.",
+                langBtn: "🌐 Nederlands",
+                question: "Click the button to generate a new question!"
+            },
+            nl: {
+                title: "🤔 Zou je liever...",
+                generate: "Genereer",
+                loading: "Vraag genereren...",
+                error: "Oeps! Er ging iets mis.",
+                langBtn: "🌐 English",
+                question: "Klik op de knop om een nieuwe vraag te genereren!"
+            }
+        };
+
+        function switchLanguage() {
+            currentLang = currentLang === "en" ? "nl" : "en";
+            document.querySelector("h1").innerText = translations[currentLang].title;
+            document.getElementById("generateBtn").innerText = translations[currentLang].generate;
+            document.getElementById("langBtn").innerText = translations[currentLang].langBtn;
+            document.getElementById("question").innerText = translations[currentLang].question;
+        }
+    </script>
+</body>
+</html>
