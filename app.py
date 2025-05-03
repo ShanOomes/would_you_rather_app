@@ -8,7 +8,7 @@ app = Flask(__name__)
 
 client = OpenAI(
     base_url="https://openrouter.ai/api/v1",
-    api_key=os.getenv("OPENROUTER_API_KEY"),
+    api_key='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',
 )
 
 PROMPTS = {
