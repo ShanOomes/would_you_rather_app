@@ -20,10 +20,6 @@ def generate_would_you_rather(lang):
     prompt = PROMPTS.get(lang, PROMPTS["en"])
     completion = client.chat.completions.create(
         model="qwen/qwen3-1.7b:free",
-        extra_headers={
-            "HTTP-Referer": "http://localhost:5000",
-            "X-Title": "Would You Rather Generator"
-        },
         messages=[
             {"role": "user", "content": prompt}
         ]
@@ -39,8 +35,6 @@ def index():
 @app.route("/generate")
 def generate():
     lang = request.args.get("lang", "en")
-
-    print("API Key:", os.getenv("OPENROUTER_API_KEY"))
 
     try:
         question = generate_would_you_rather(lang)
