@@ -36,6 +36,10 @@ def index():
 def generate():
     lang = request.args.get("lang", "en")
 
+    # Debug: check if API key is visible
+    api_key = os.getenv("OPENROUTER_API_KEY")
+    print("✅ API key detected:", api_key)
+
     try:
         question = generate_would_you_rather(lang)
         return jsonify({"question": question})
