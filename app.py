@@ -41,6 +41,8 @@ def index():
 def generate():
     lang = request.args.get("lang", "en")
 
+    print(f"Generating question in {lang}...")  # Add this to see details
+    
     try:
         question = generate_would_you_rather(lang)
         return jsonify({"question": question})
