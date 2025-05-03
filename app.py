@@ -1,15 +1,10 @@
 from flask import Flask, render_template, jsonify, request
-from openai import OpenAI
 from dotenv import load_dotenv
+import requests
 import os
 
 load_dotenv()
 app = Flask(__name__)
-
-client = OpenAI(
-    base_url="https://openrouter.ai/api/v1",
-    api_key=os.getenv("OPENROUTER_API_KEY"),
-)
 
 PROMPTS = {
     "en": "Generate a funny, creative, or strange 'Would You Rather' question. Keep it safe for all audiences. Only return the question itself.",
@@ -18,14 +13,24 @@ PROMPTS = {
 
 def generate_would_you_rather(lang):
     prompt = PROMPTS.get(lang, PROMPTS["en"])
-    completion = client.chat.completions.create(
-        model="qwen/qwen3-1.7b:free",
-        messages=[
+    headers = {
+        "Authorization": f"Bearer {os.getenv('OPENROUTER_API_KEY')}",
+        "Content-Type": "application/json",
+    }
+
+    data = {
+        "model": "qwen/qwen3-1.7b:free",
+        "messages": [
             {"role": "user", "content": prompt}
         ]
-    )
+    }
 
-    full = completion.choices[0].message.content.strip()
+    response = requests.post("https://openrouter.ai/api/v1/chat/completions", json=data, headers=headers)
+    
+    if response.status_code != 200:
+        raise Exception(f"Error code: {response.status_code} - {response.text}")
+
+    full = response.json()["choices"][0]["message"]["content"].strip()
     return full.split("?")[0].strip() + "?"
 
 @app.route("/")
@@ -35,10 +40,6 @@ def index():
 @app.route("/generate")
 def generate():
     lang = request.args.get("lang", "en")
-
-    # Debug: check if API key is visible
-    api_key = os.getenv("OPENROUTER_API_KEY")
-    print("✅ API key detected:", api_key)
 
     try:
         question = generate_would_you_rather(lang)

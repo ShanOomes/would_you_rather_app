@@ -121,7 +121,7 @@
             questionDiv.innerText = '';
 
             try {
-                const response = await fetch(`/generate`);
+                const response = await fetch(`/generate?lang=${currentLang}`);
                 const data = await response.json();
 
                 if (data.question) {
