@@ -44,4 +44,5 @@ def generate():
         question = generate_would_you_rather(lang)
         return jsonify({"question": question})
     except Exception as e:
+        print("❌ Error in /generate:", e)  # Add this to see details
         return jsonify({"error": str(e)}), 500
