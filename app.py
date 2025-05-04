@@ -19,12 +19,8 @@ PROMPTS = {
 def generate_would_you_rather(lang):
     prompt = PROMPTS.get(lang, PROMPTS["en"])
 
-    print("🔄 Using prompt:", prompt)  # Add this to see the prompt being used
-    print("API Key:", os.getenv("OPENROUTER_API_KEY"))  # Add this to see the API key being used
-    print("Base URL:", client.base_url)  # Add this to see the base URL being used
-    
     completion = client.chat.completions.create(
-        model="qwen/qwen3-1.7b:free",
+        model="qwen/qwen3-4b:free",
         messages=[
             {"role": "user", "content": prompt}
         ]
@@ -49,3 +45,8 @@ def generate():
     except Exception as e:
         print("❌ Error in /generate:", e)  # Add this to see details
         return jsonify({"error": str(e)}), 500
+    
+
+# main
+if __name__ == "__main__":
+    app.run(debug=True, host="")
